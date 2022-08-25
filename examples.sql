@@ -22,3 +22,32 @@ GROUP BY MK.MakeName
 ORDER BY SUM(SA.TotalSalePrice) DESC
 )
 ORDER BY MKX.MakeName, SDX.SalePrice DESC
+
+--Después de todo el trabajo que hizo para el director de ventas, su reputación como analista alcanzó nuevos niveles.
+--Ahora es el turno del CEO de solicitar ayuda. Quiere saber qué marcas generan la mayor cantidad de ventas y, 
+--específicamente, cuántos autos se han vendido de las tres marcas más vendidas. El siguiente fragmento de código 
+--te permite impresionarla con tus habilidades de SQL:
+
+SELECT MK.MakeName
+,COUNT(MK.MakeName) AS VehiclesSold
+,SUM(SD.SalePrice) AS TotalSalesPerMake
+FROM Data.Make AS MK
+INNER JOIN Data.Model AS MD ON MK.MakeID = MD.MakeID
+INNER JOIN Data.Stock AS ST ON ST.ModelID = MD.ModelID
+INNER JOIN Data.SalesDetails SD ON ST.StockCode = SD.StockID
+WHERE MakeName IN (
+SELECT TOP (3) MK.MakeName
+FROM Data.Make AS MK
+INNER JOIN Data.Model AS MD
+ON MK.MakeID = MD.MakeID
+INNER JOIN Data.Stock AS ST
+ON ST.ModelID = MD.ModelID
+INNER JOIN Data.SalesDetails SD
+ON ST.StockCode = SD.StockID
+INNER JOIN Data.Sales AS SA
+ON SA.SalesID = SD.SalesID
+GROUP BY MK.MakeName
+ORDER BY COUNT(MK.MakeName) DESC
+)
+GROUP BY MK.MakeName
+ORDER BY VehiclesSold DESC
